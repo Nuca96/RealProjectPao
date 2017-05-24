@@ -1,5 +1,9 @@
 package Application;
 
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author Irina
@@ -23,10 +27,10 @@ public class Application {
         //you don't have to call another state or menu method
     }
     
-    private void friendsProfileMenu(String currentUsername, String anotherUsername){
+    private void friendsProfileMenu(String currentUsername, String anotherUsername) throws SQLException{
         //menu: to see the comments, to add a comment, to return to your profile
         
-        output.friendsProfileMenu();
+        output.friendsProfileMenu(anotherUsername);
         int choice=input.getInt();
         switch(choice){
             case(1):{
@@ -58,8 +62,8 @@ public class Application {
         //the same comment
     }
     
-    private void myProfileMenu(String currentUser){
-        output.myProfileMenu();
+    private void myProfileMenu(String currentUser) throws SQLException{
+        output.myProfileMenu(currentUser);
         
         int choice = input.getInt();
         
@@ -90,7 +94,7 @@ public class Application {
         }
     }
     
-    private String loginState(){
+    private String loginState() throws SQLException{
         output.loginState();
         
         String username = input.getWord();
@@ -103,7 +107,7 @@ public class Application {
         return "";
     }
     
-    private String createAccountState(){
+    private String createAccountState() throws SQLException{
         
         output.createAccountState();
         
@@ -136,7 +140,7 @@ public class Application {
         return "";
     }
     
-    public void mainMenu(){
+    public void mainMenu() throws SQLException{
         output.mainMenu();
         int choice = input.getInt();
         String user;
@@ -164,7 +168,11 @@ public class Application {
     
     public static void main(String[] args) {
         Application app = new Application();
-        app.mainMenu();
+        try {
+            app.mainMenu();
+        } catch (SQLException ex) {
+            Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
 }

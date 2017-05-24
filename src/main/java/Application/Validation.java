@@ -43,30 +43,11 @@ public class Validation {
         return true;
     }
     
-    public Boolean password (String password, String user){
+    public Boolean password (String password, String user) throws SQLException{
         //if it matches
         
-         boolean validData=false;
-         try {
-            
-            ResultSet res=mySQL.allUserNamesPassword();
-            String currUserName;
-            String currPassword;
-            
-            while (res.next()){
-                currUserName=res.getString("username");
-                currPassword=res.getString("password");
-                
-                if((currUserName.equals(user))&&(currPassword.equals(password))){
-                    validData=true;
-                    break;
-                }
-            }
-        } catch (SQLException ex) {
-            Logger.getLogger(Validation.class.getName()).log(Level.SEVERE, null, ex);
-        }  
-        
-        return validData;
+        String pass = mySQL.getPassword(user);
+        return pass.equals(password);
         
     }
     

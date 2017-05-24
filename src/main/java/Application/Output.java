@@ -24,16 +24,21 @@ public class Output {
         System.out.println("Press 3 for exit the aplication");
     }
     
-    public void myProfileMenu(){
+    public void myProfileMenu(String user) throws SQLException{
         
         System.out.println();
         System.out.println("---------------------------------Welcom !------------------------------------");
         System.out.println();
+        userInfo(user);
+        
+        
+        System.out.println("You have "+mySQL.unseenComments(user)+" unseen comments!");
         
         System.out.println("Press 1 for search for an account");
         System.out.println("Press 2 for change description");
         System.out.println("Press 3 for change password");
-        System.out.println("Press 4 for logout");
+        System.out.println("Press 4 for comments");
+        System.out.println("Press 5 for logout");
         System.out.println();
         
         //user Info + how many unseen comments
@@ -41,21 +46,22 @@ public class Output {
         
     }
     
-    public void friendsProfileMenu(){
+    public void friendsProfileMenu(String user) throws SQLException{
         
         //user Info +
         //menu: to see the comments, to add a comment, to return to your profile
-        
+        userInfo(user);
         System.out.println();
         System.out.println("Press 1 for show your comments");
         System.out.println("Press 2 for write a comment");
-        System.out.println("Press 3 for .....");
+        System.out.println("Press 3 for go back to your profile");
     
     
     }
     
     public void searchMenu (){
         //select the user you want or 0 for return
+        System.out.println("Select the user you want or 0 for return to your profile:");
     }
     
     public void commentMessage(){
@@ -65,6 +71,7 @@ public class Output {
     
     public void descriptionMessage(){
         //"please insert your description below:"
+        System.out.println("Please inser your description below:");
     }
     
     public void userInfo (String user) throws SQLException{
@@ -109,11 +116,12 @@ public class Output {
     
     public void errorEmail(){
         System.out.println("Incorect email please try again!");
+        System.out.println();
     }
     
     public void errorPassword(){
         //incorrect password (the password must have...)
-        System.out.println("Incorrect password the password mast have 6 characters , it mast have a number and a capital!");
+        System.out.println("Incorrect password the password mast have 6 characters , it must have a number and a capital!");
         System.out.println();
     }
     

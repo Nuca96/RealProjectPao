@@ -23,7 +23,7 @@ public class MySql {
             Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/pao", "root", "");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/pao", "root", "ciscoconpass");
         } catch (SQLException ex) {
             Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -34,19 +34,24 @@ public class MySql {
         }
     }
     
+    private String criptPassword(String pass){
+        //an algorithm for cripting
+        return pass;
+    }
+    
+    private String decriptPassword(String pass){
+        //an algorithm fot decripting
+        return pass;
+    }
+    
     public void insertUser(String userName, String firstName, String lastName, String email, String password){
         //insert into users the strings
         //cripted password!!!
         
-        String sql="insert into users (username, email, lastname, firstname, password) values ('" + firstName + "', '" +lastName  + "', '" + userName + "', '" +  password + "', '" + email+"');";
+        password=criptPassword(password);
+        String sql="insert into users (firstname, lastname, username, password, email) values ('" + firstName + "', '" +lastName  + "', '" + userName + "', '" +  password + "', '" + email+"');";
         try {
                     int n = statement.executeUpdate(sql);
-                    if (n==1){
-                        System.out.println("Accound created ");
-                    }
-                    else{
-                        System.out.println("Error!");
-                    }
         }catch(SQLException ex){
             Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -55,16 +60,10 @@ public class MySql {
     public void insertComment (String comment, String sender, String recever){
         //inseret into comments the strings + sysdate (in the field 'data' + a 'no' value (in the field 'seen')
         
-        String sql= "insert into comments(sender, recever, comment,seen) values ('"+sender+"', '"+recever+"', '"+comment+"', '"+"no"+"');";
+        String sql= "insert into comments(sender, recever, comment,seen, date) values ('"+sender+"', '"+recever+"', '"+comment+"', 'no', sysdate);";
         try{
             
             int n= statement.executeUpdate(sql);
-            if(n==1){
-                System.out.println("Comment was inserted ");
-            }
-            else{
-                System.out.println("Error!");
-            }
             
         }catch(SQLException ex){
             Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
@@ -77,10 +76,14 @@ public class MySql {
         return res;
     }
     
-    public ResultSet allUserNamesPassword() throws SQLException{
-        ResultSet res =statement.executeQuery("select username, password from users;");
-        return res;
+    public String getPassword(String user) throws SQLException{
+        ResultSet res =statement.executeQuery("select password from users where username='"+user+"';");
+        res.next();
+        String password=res.getString(1);
+        password=decriptPassword(password);
+        return password;
     }
+    
     
     public ResultSet allEmails() throws SQLException{
         ResultSet res =statement.executeQuery("select email from users;");
@@ -116,13 +119,10 @@ public class MySql {
     public void changeToSeen (String user){
         //change the field 'seen' to yes to all the comments for user
         String sql;
-        sql="update comments set seen = 'yes' where seen = 'no';";
+        sql="update comments set seen = 'yes' where recever = '"+user+"';";
                 
         try{
             int n = statement.executeUpdate(sql);
-            if (n!=1){
-                System.out.println("Error!");
-            }
         }catch(SQLException ex){
             Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -131,14 +131,12 @@ public class MySql {
     public int unseenComments (String user){
         //return how many unseen comments have the user
         int count =0;
-        String sql ="select count(*) from comments where seen= 'no'";
+        String sql ="select count(*) from comments where seen= 'no' && username='"+user+"';";
         
         try{
             ResultSet res = statement.executeQuery(sql);
-       
-            while(res.next()){
-                count++;
-            }
+            res.next();
+            count=res.getInt(1);
         }catch(SQLException ex){
             Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -151,33 +149,10 @@ public class MySql {
         
         String sql="update users set description = '"+ description + "' where username = '" + user+"';";
         try {
-            int n = statement.executeUpdate(sql);
-            if (n==1){
-                System.out.println("Description changed");
-            }
-            else{
-                System.out.println("Error!");
-            }
+            statement.executeUpdate(sql);
         } catch (SQLException ex) {
             Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
         }
-    }
-    
-    public String getPassword (String user){
-        //obviously
-        //decripted password!!!
-        
-        String sql="select password from users where username='"+user+"';";
-        String password="";
-        
-        try{
-            ResultSet res=statement.executeQuery(sql);
-            password=res.getString("password");
-        }catch(SQLException ex){
-            Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-        return password;
     }
     
     public void changePassword (String user, String password){
@@ -187,7 +162,8 @@ public class MySql {
     public ResultSet searchReults (String word) throws SQLException{
         //select * from users where email=word or lower(firstname)=word...
         //you have more boring details to add in this search
-        ResultSet res=statement.executeQuery("select * from users where username like '"+word+"%' or firstname like "+word+"%' or lastnamelike "+word+"%'");
+        word = word.toLowerCase();
+        ResultSet res=statement.executeQuery("select * from users where lower(username) like '%"+word+"%' or lower(firstname) like '%"+word+"%' or lower(lastname) like '%"+word+"%';");
         
         return res;
     }
