@@ -12,6 +12,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+ import java.time.LocalDate;
+ import java.time.format.DateTimeFormatter;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.crypto.BadPaddingException;
@@ -86,7 +88,11 @@ public class MySql {
     public void insertComment (String comment, String sender, String recever) throws SQLException{
         //inseret into comments the strings + sysdate (in the field 'data' + a 'no' value (in the field 'seen')
         
-        String sql= "insert into comments(sender, recever, comment,seen) values ('"+sender+"', '"+recever+"', '"+comment+"', 'no';";
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("DD/MM/YYYY");  //that is for data!! 
+        LocalDate localDate = LocalDate.now();
+ 
+         
+        String sql= "insert into comments(sender, recever, comment,seen, date) values ('"+sender+"', '"+recever+"', '"+comment+"', 'no','"+localDate+"');";
         int n= statement.executeUpdate(sql);
  
     }
