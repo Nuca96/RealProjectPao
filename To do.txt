@@ -1,18 +1,10 @@
 to do:
 
--elimin all the try-catch from classes ---> throws exception (ask me!)
+
 
 -in Validation class:
  *injurious words
 
-
--in MySql:
- *changePassword function
- *criptPassword function
- *decriptPassword function
-
--in Input:
- *getText: it's not ok!! it will always return an empty string (we got this problem last week and we solved it)
 
 -in Output:
  *errorCensored function

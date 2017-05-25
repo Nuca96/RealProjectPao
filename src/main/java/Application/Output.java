@@ -90,6 +90,7 @@ public class Output {
         System.out.println("First Name: "+res.getString("firstname"));
         System.out.println("Last Name: "+res.getString("lastname"));
         System.out.println("Email: "+res.getString("email"));
+        System.out.println("Description: "+res.getString("description"));
         System.out.println("---------------------------------------------------------------------------------------------------------");
     }
     

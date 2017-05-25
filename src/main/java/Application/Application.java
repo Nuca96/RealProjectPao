@@ -1,9 +1,18 @@
 package Application;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  *
@@ -17,12 +26,14 @@ public class Application {
     private Validation valid;
     private MyState state;
     
+    
     public Application(){
         mySQL = new MySql();
         input = new Input();
         output = new Output(mySQL);
         valid = new Validation(mySQL);
         state = new MyState(input, output, valid, mySQL);
+        
     }
     
     
@@ -53,7 +64,7 @@ public class Application {
         
     }
     
-    private void myProfileMenu(String currentUser) throws SQLException{
+    private void myProfileMenu(String currentUser) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException{
         output.myProfileMenu(currentUser);
         
         int choice = input.getInt();
@@ -94,7 +105,7 @@ public class Application {
         }
     }
     
-    public void mainMenu() throws SQLException{
+    public void mainMenu() throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException{
         output.mainMenu();
         int choice = input.getInt();
         String user;
@@ -130,13 +141,12 @@ public class Application {
         
     }
     
-    public static void main(String[] args) {
+
+    public static void main(String[] args) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException {
         Application app = new Application();
-        try {
-            app.mainMenu();
-        } catch (SQLException ex) {
-            Logger.getLogger(Application.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        
+           app.mainMenu();
+           
     }
     
 }

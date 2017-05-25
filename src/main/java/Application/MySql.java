@@ -1,6 +1,12 @@
 
 package Application;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -8,11 +14,15 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 public class MySql {
     
     private Connection connection;
     private Statement statement;
+    private CryptoUtil cript;
     
     public MySql (){
         
@@ -23,7 +33,7 @@ public class MySql {
             Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/pao", "root", "ciscoconpass");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/pao", "root", "");
         } catch (SQLException ex) {
             Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -34,41 +44,51 @@ public class MySql {
         }
     }
     
-    private String criptPassword(String pass){
+    private String criptPassword(String pass) throws NoSuchAlgorithmException, 
+            InvalidKeySpecException, 
+            NoSuchPaddingException, 
+            InvalidKeyException,
+            InvalidAlgorithmParameterException,
+            UnsupportedEncodingException,
+            IllegalBlockSizeException,
+            BadPaddingException{
         //an algorithm for cripting
-        return pass;
+        cript= new CryptoUtil();
+        String passCript=cript.encrypt(pass);
+        
+        return passCript;
     }
     
-    private String decriptPassword(String pass){
+    private String decriptPassword(String pass) throws NoSuchAlgorithmException, 
+            InvalidKeySpecException, NoSuchPaddingException, 
+            InvalidKeyException, InvalidAlgorithmParameterException, 
+            IllegalBlockSizeException, 
+            BadPaddingException, 
+            IOException{
+        
         //an algorithm fot decripting
-        return pass;
+        cript = new CryptoUtil();
+        String passDescript=cript.decrypt(pass);
+        return passDescript;
     }
     
-    public void insertUser(String userName, String firstName, String lastName, String email, String password){
+    public void insertUser(String userName, String firstName, String lastName, String email, String password) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException{
         //insert into users the strings
         //cripted password!!!
         
-        password=criptPassword(password);
-        String sql="insert into users (firstname, lastname, username, password, email) values ('" + firstName + "', '" +lastName  + "', '" + userName + "', '" +  password + "', '" + email+"');";
-        try {
-                    int n = statement.executeUpdate(sql);
-        }catch(SQLException ex){
-            Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        String passCript=criptPassword(password);
+        String sql="insert into users (firstname, lastname, username, password, email) values ('" + firstName + "', '" +lastName  + "', '" + userName + "', '" +  passCript + "', '" + email+"');";
+        
+        int n = statement.executeUpdate(sql);
+       
     }
     
-    public void insertComment (String comment, String sender, String recever){
+    public void insertComment (String comment, String sender, String recever) throws SQLException{
         //inseret into comments the strings + sysdate (in the field 'data' + a 'no' value (in the field 'seen')
         
         String sql= "insert into comments(sender, recever, comment,seen, date) values ('"+sender+"', '"+recever+"', '"+comment+"', 'no', to_char(sysdate,'DD-MM-YYYY');";
-        try{
-            
-            int n= statement.executeUpdate(sql);
-            
-        }catch(SQLException ex){
-            Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+        int n= statement.executeUpdate(sql);
+ 
     }
     
     public ResultSet allUserNames() throws SQLException{
@@ -76,10 +96,18 @@ public class MySql {
         return res;
     }
     
-    public String getPassword(String user) throws SQLException{
+    public String getPassword(String user) throws SQLException, 
+            NoSuchAlgorithmException, 
+            InvalidKeySpecException, 
+            NoSuchPaddingException, 
+            InvalidKeyException, 
+            InvalidAlgorithmParameterException, 
+            IllegalBlockSizeException, 
+            BadPaddingException,
+            IOException{
         ResultSet res =statement.executeQuery("select password from users where username='"+user+"';");
         res.next();
-        String password=res.getString(1);
+        String password=res.getString("password");
         password=decriptPassword(password);
         return password;
     }
@@ -116,47 +144,41 @@ public class MySql {
         return res;
     }
     
-    public void changeToSeen (String user){
+    public void changeToSeen (String user) throws SQLException{
         //change the field 'seen' to yes to all the comments for user
         String sql;
+        
         sql="update comments set seen = 'yes' where recever = '"+user+"';";
-                
-        try{
-            int n = statement.executeUpdate(sql);
-        }catch(SQLException ex){
-            Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        int n = statement.executeUpdate(sql);
+        
     }
     
-    public int unseenComments (String user){
+    public int unseenComments (String user) throws SQLException{
         //return how many unseen comments have the user
         int count =0;
         String sql ="select count(*) from comments where seen= 'no' && recever='"+user+"';";
         
-        try{
-            ResultSet res = statement.executeQuery(sql);
-            res.next();
-            count=res.getInt(1);
-        }catch(SQLException ex){
-            Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
+        ResultSet res = statement.executeQuery(sql);
+        res.next();
+        count=res.getInt(1);
+      
         return count;
     }
     
-    public void setDescription (String user, String description){
+    public void setDescription (String user, String description) throws SQLException{
         //change the description for user
         
         String sql="update users set description = '"+ description + "' where username = '" + user+"';";
-        try {
-            statement.executeUpdate(sql);
-        } catch (SQLException ex) {
-            Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        statement.executeUpdate(sql);
+        
     }
     
-    public void changePassword (String user, String password){
+    public void changePassword (String user, String password) throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException, SQLException{
         //cripted!!
+        
+        String passCript=cript.encrypt(password);
+        String sql="update users set password = '"+passCript+"' where username = '"+user+"';";
+        statement.executeUpdate(sql);
     }
     
     public ResultSet searchResults (String word) throws SQLException{

@@ -5,8 +5,17 @@
  */
 package Application;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  *
@@ -26,7 +35,7 @@ public class MyState {
         output = o;
     }
     
-    public void writeComment(String currentUsername, String anotherUsername){
+    public void writeComment(String currentUsername, String anotherUsername) throws SQLException{
         //currentUsername wants to write a comment to anotherUsername
         //you don't have to call another state or menu method
         
@@ -71,7 +80,7 @@ public class MyState {
     }
     
     
-    public void changeDescription(String currentUser){
+    public void changeDescription(String currentUser) throws SQLException{
         //you mustn't call another menu or state function
         output.descriptionMessage();
         String description;
@@ -85,7 +94,7 @@ public class MyState {
         }
     }
     
-    public void changePassword(String currentUser) throws SQLException{
+    public void changePassword(String currentUser) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException{
         //the same comment
         output.passwordState();
         
@@ -97,7 +106,7 @@ public class MyState {
         
         Boolean ok = true;
         
-        if (valid.password(newPassword) && valid.password(currentPassword, currentUser)){
+        if (valid.password(newPassword)){ //&& valid.password(currentPassword, currentUser)){
             mySQL.changePassword(currentUser, newPassword);
         }
         else{
@@ -105,10 +114,8 @@ public class MyState {
             changePassword(currentUser);
         }
     }
-    
-    
-    
-    public String login() throws SQLException{
+   
+    public String login() throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException{
         output.loginState();
         
         String username = input.getWord();
@@ -121,7 +128,7 @@ public class MyState {
         return "";
     }
     
-    public String createAccount() throws SQLException{
+    public String createAccount() throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, UnsupportedEncodingException, IllegalBlockSizeException, BadPaddingException{
         
         output.createAccountState();
         

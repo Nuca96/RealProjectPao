@@ -5,10 +5,18 @@
  */
 package Application;
 
+import java.io.IOException;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  *
@@ -43,10 +51,13 @@ public class Validation {
         return true;
     }
     
-    public Boolean password (String password, String user) throws SQLException{
+    public Boolean password (String password, String user) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException{
         //if it matches
         
+        
+        
         String pass = mySQL.getPassword(user);
+        //System.out.println(mySQL.getPassword(user));
         return pass.equals(password);
         
     }
