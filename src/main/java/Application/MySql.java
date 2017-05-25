@@ -33,7 +33,7 @@ public class MySql {
             Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
         }
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/pao", "root", "");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/pao", "root", "ciscoconpass");
         } catch (SQLException ex) {
             Logger.getLogger(MySql.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -86,7 +86,7 @@ public class MySql {
     public void insertComment (String comment, String sender, String recever) throws SQLException{
         //inseret into comments the strings + sysdate (in the field 'data' + a 'no' value (in the field 'seen')
         
-        String sql= "insert into comments(sender, recever, comment,seen, date) values ('"+sender+"', '"+recever+"', '"+comment+"', 'no', to_char(sysdate,'DD-MM-YYYY');";
+        String sql= "insert into comments(sender, recever, comment,seen) values ('"+sender+"', '"+recever+"', '"+comment+"', 'no';";
         int n= statement.executeUpdate(sql);
  
     }

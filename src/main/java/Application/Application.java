@@ -75,6 +75,7 @@ public class Application {
                 
                 if (!anotherUser.equals(currentUser)){
                     friendsProfileMenu(currentUser, anotherUser);
+                    myProfileMenu(currentUser);
                 }
                 else{
                     myProfileMenu(currentUser);
@@ -94,6 +95,7 @@ public class Application {
             case(4):{
                 output.comments(currentUser);
                 mySQL.changeToSeen(currentUser);
+                myProfileMenu(currentUser);
                 break;
             }
             case(5):{
@@ -107,6 +109,7 @@ public class Application {
     
     public void mainMenu() throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException{
         output.mainMenu();
+        
         int choice = input.getInt();
         String user;
         
@@ -114,10 +117,12 @@ public class Application {
             case(1):{
                 user=state.login();
                 if(user.isEmpty()){
+                    output.errorPassword();
                     mainMenu();
                 }
                 else{
                     myProfileMenu(user);
+                    mainMenu();
                 }
                 break;
             } 
@@ -128,6 +133,7 @@ public class Application {
                 }
                 else{
                     myProfileMenu(user);
+                    mainMenu();
                 }
                 break;
             }
@@ -144,8 +150,7 @@ public class Application {
 
     public static void main(String[] args) throws SQLException, NoSuchAlgorithmException, InvalidKeySpecException, NoSuchPaddingException, InvalidKeyException, InvalidAlgorithmParameterException, IllegalBlockSizeException, BadPaddingException, IOException {
         Application app = new Application();
-        
-           app.mainMenu();
+        app.mainMenu();
            
     }
     
