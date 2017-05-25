@@ -84,7 +84,7 @@ public class Validation {
     
     public Boolean text (String text){
         //if it doesn't contain injurious words
-        return false;
+        return true;
     }
     
 }

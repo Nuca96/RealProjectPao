@@ -1,5 +1,6 @@
 package Application;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -10,22 +11,21 @@ import java.util.logging.Logger;
  */
 public class Application {
     
-    MySql mySQL;
-    Input input;
-    Output output;
-    Validation valid;
+    private MySql mySQL;
+    private Input input;
+    private Output output;
+    private Validation valid;
+    private MyState state;
     
     public Application(){
         mySQL = new MySql();
         input = new Input();
         output = new Output(mySQL);
         valid = new Validation(mySQL);
+        state = new MyState(input, output, valid, mySQL);
     }
     
-    private void writeCommentState(String currentUsername, String anotherUsername){
-        //currentUsername wants to write a comment to anotherUsername
-        //you don't have to call another state or menu method
-    }
+    
     
     private void friendsProfileMenu(String currentUsername, String anotherUsername) throws SQLException{
         //menu: to see the comments, to add a comment, to return to your profile
@@ -35,9 +35,13 @@ public class Application {
         switch(choice){
             case(1):{
                 output.comments(anotherUsername);
+                friendsProfileMenu(currentUsername, anotherUsername);
+                break;
             }
             case(2):{
-                writeCommentState(currentUsername, anotherUsername);
+                state.writeComment(currentUsername, anotherUsername);
+                friendsProfileMenu(currentUsername, anotherUsername);
+                break;
             }
             case(3):{
                 break;
@@ -46,20 +50,7 @@ public class Application {
                 friendsProfileMenu(currentUsername, anotherUsername);
             }
         }
-    }
-    
-    private String searchUserState (){
-        //returns a username 
-        //you could create and use another method because this one is kind of complicated
-        return "";
-    }
-    
-    private void changeDescriptionState(){
-        //you mustn't call another menu or state function
-    }
-    
-    private void changePasswordState(){
-        //the same comment
+        
     }
     
     private void myProfileMenu(String currentUser) throws SQLException{
@@ -69,21 +60,30 @@ public class Application {
         
         switch(choice){
             case(1):{
-                String anotherUser = searchUserState();
+                String anotherUser = state.searchUser(currentUser);
                 
                 if (!anotherUser.equals(currentUser)){
                     friendsProfileMenu(currentUser, anotherUser);
                 }
+                else{
+                    myProfileMenu(currentUser);
+                }
+                break;
             }
             case(2):{
-                changeDescriptionState();
+                state.changeDescription(currentUser);
+                myProfileMenu(currentUser);
+                break;
             }
             case(3):{
-                changePasswordState();
+                state.changePassword(currentUser);
+                myProfileMenu(currentUser);
+                break;
             }
             case(4):{
                 output.comments(currentUser);
                 mySQL.changeToSeen(currentUser);
+                break;
             }
             case(5):{
                 break;
@@ -94,52 +94,6 @@ public class Application {
         }
     }
     
-    private String loginState() throws SQLException{
-        output.loginState();
-        
-        String username = input.getWord();
-        String password = input.getWord();
-        
-        if (valid.password(password, username)){
-            return username;
-        }
-        
-        return "";
-    }
-    
-    private String createAccountState() throws SQLException{
-        
-        output.createAccountState();
-        
-        String username = input.getWord();
-        String email = input.getWord();
-        String firstname = input.getWord();
-        String lastname = input.getWord();
-        String password = input.getWord();
-        
-        Boolean ok=true;
-        
-        if (!valid.username(username)){
-            output.errorUsername();
-            ok=false;
-        }
-        if (!valid.email(email)){
-            output.errorEmail();
-            ok=false;
-        }
-        if (!valid.password(password)){
-            output.errorPassword();
-            ok=false;
-        }
-        
-        if (ok){
-            mySQL.insertUser(username, firstname, lastname, email, password);
-            return username;
-        }
-        
-        return "";
-    }
-    
     public void mainMenu() throws SQLException{
         output.mainMenu();
         int choice = input.getInt();
@@ -147,14 +101,24 @@ public class Application {
         
         switch(choice){
             case(1):{
-                user=loginState();
-                if(!user.isEmpty())
+                user=state.login();
+                if(user.isEmpty()){
+                    mainMenu();
+                }
+                else{
                     myProfileMenu(user);
+                }
+                break;
             } 
             case(2):{
-                user=createAccountState();
-                if(!user.isEmpty())
+                user=state.createAccount();
+                if(user.isEmpty()){
+                    mainMenu();
+                }
+                else{
                     myProfileMenu(user);
+                }
+                break;
             }
             case(3):{
                 break;

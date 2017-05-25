@@ -60,7 +60,7 @@ public class MySql {
     public void insertComment (String comment, String sender, String recever){
         //inseret into comments the strings + sysdate (in the field 'data' + a 'no' value (in the field 'seen')
         
-        String sql= "insert into comments(sender, recever, comment,seen, date) values ('"+sender+"', '"+recever+"', '"+comment+"', 'no', sysdate);";
+        String sql= "insert into comments(sender, recever, comment,seen, date) values ('"+sender+"', '"+recever+"', '"+comment+"', 'no', to_char(sysdate,'DD-MM-YYYY');";
         try{
             
             int n= statement.executeUpdate(sql);
@@ -112,7 +112,7 @@ public class MySql {
     }
     
     public ResultSet allData(String user) throws SQLException{
-        ResultSet res =statement.executeQuery("select * from comments where username = '"+ user +"' ;");
+        ResultSet res =statement.executeQuery("select * from users where username = '"+ user +"' ;");
         return res;
     }
     
@@ -131,7 +131,7 @@ public class MySql {
     public int unseenComments (String user){
         //return how many unseen comments have the user
         int count =0;
-        String sql ="select count(*) from comments where seen= 'no' && username='"+user+"';";
+        String sql ="select count(*) from comments where seen= 'no' && recever='"+user+"';";
         
         try{
             ResultSet res = statement.executeQuery(sql);
@@ -159,7 +159,7 @@ public class MySql {
         //cripted!!
     }
     
-    public ResultSet searchReults (String word) throws SQLException{
+    public ResultSet searchResults (String word) throws SQLException{
         //select * from users where email=word or lower(firstname)=word...
         //you have more boring details to add in this search
         word = word.toLowerCase();

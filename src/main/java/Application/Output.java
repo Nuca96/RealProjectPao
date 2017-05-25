@@ -27,12 +27,13 @@ public class Output {
     public void myProfileMenu(String user) throws SQLException{
         
         System.out.println();
-        System.out.println("---------------------------------Welcom !------------------------------------");
+        System.out.println("---------------------------------Welcome !------------------------------------");
         System.out.println();
         userInfo(user);
         
         
         System.out.println("You have "+mySQL.unseenComments(user)+" unseen comments!");
+        System.out.println("---------------------------------------------------------------------------------------------------------");
         
         System.out.println("Press 1 for search for an account");
         System.out.println("Press 2 for change description");
@@ -59,6 +60,11 @@ public class Output {
     
     }
     
+    public void searchState(){
+        
+        System.out.println("Please insert a part of a name, username or email:");
+    }
+    
     public void searchMenu (){
         //select the user you want or 0 for return
         System.out.println("Select the user you want or 0 for return to your profile:");
@@ -66,12 +72,12 @@ public class Output {
     
     public void commentMessage(){
         //"please insert your comment below:"
-        System.out.println("Please inser your comment below:");
+        System.out.println("Please insert your comment below:");
     }
     
     public void descriptionMessage(){
         //"please insert your description below:"
-        System.out.println("Please inser your description below:");
+        System.out.println("Please insert your description below:");
     }
     
     public void userInfo (String user) throws SQLException{
@@ -79,15 +85,11 @@ public class Output {
         ResultSet res=mySQL.allData(user);
         System.out.println();
         System.out.println("----------------------------------------------------Info------------------------------------------------");
+        res.next();
         System.out.println("Username: "+res.getString("username"));
         System.out.println("First Name: "+res.getString("firstname"));
-        System.out.println("Last Name: "+res.getString("Lasttname"));
+        System.out.println("Last Name: "+res.getString("lastname"));
         System.out.println("Email: "+res.getString("email"));
-        System.out.println("Password: ");
-        
-        for(int i=0;i<res.getString("password").length();i++){  // I was carrefully :))
-            System.out.print("*");
-        }
         System.out.println("---------------------------------------------------------------------------------------------------------");
     }
     
@@ -140,17 +142,23 @@ public class Output {
         String first_name;
         String email;
         
+        int iterator=0;
+        
         while(rs.next()){
         
-            user=rs.getString("user");
+            user=rs.getString("username");
             last_name=rs.getString("lastname");
             first_name=rs.getString("firstname");
             email=rs.getString("email");
             
+            iterator++;
+            
+            System.out.println(iterator);
             System.out.println("Username: "+user);
             System.out.println("First Name: "+first_name);
             System.out.println("Last Name: "+last_name);
             System.out.println("Email: "+email);
+            System.out.println();
                
         }
     }
